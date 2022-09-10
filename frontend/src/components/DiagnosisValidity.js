@@ -5,15 +5,27 @@ import { loadingSpinner } from "../helpers/spinner";
 const DiagnosisValidity = () => {
   const [diagnosis, setDiagnosis] = useState(null);
 
+  const localStorageValidatedData = localStorage.getItem("validatedData")
+    ? JSON.parse(localStorage.getItem("validatedData"))
+    : null;
+
   useEffect(() => {
     getDiagnosis();
+
+    if (localStorageValidatedData) {
+      setDiagnosis(localStorageValidatedData);
+    } else {
+      getDiagnosis();
+    }
   }, []);
 
   const getDiagnosis = async () => {
     try {
       const response = await fetchSavedDiagnosis();
+
       if (response) {
         setDiagnosis(response.data);
+        localStorage.setItem("validatedData", JSON.stringify(response.data));
       }
     } catch (error) {
       console.log("error", error.message);
@@ -29,7 +41,10 @@ const DiagnosisValidity = () => {
             ? diagnosis.data
                 .filter((item) => item.Valid === true)
                 .map((item) => (
-                  <div className="mb-3 border border-primary border-1 p-3">
+                  <div
+                    key={item._id}
+                    className="mb-3 border border-primary border-1 p-3"
+                  >
                     <div>
                       <p>Accuracy - {item.Accuracy}</p>
                       <p>Name - {item.Name}</p>
@@ -49,7 +64,10 @@ const DiagnosisValidity = () => {
             ? diagnosis.data
                 .filter((item) => item.Valid === false)
                 .map((item) => (
-                  <div className="mb-3 border border-primary border-1 p-3">
+                  <div
+                    key={item._id}
+                    className="mb-3 border border-primary border-1 p-3"
+                  >
                     <div>
                       <p>Accuracy - {item.Accuracy}</p>
                       <p>Name - {item.Name}</p>
