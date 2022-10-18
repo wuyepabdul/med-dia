@@ -1,22 +1,50 @@
-const { getSymptoms, getDiagnosis } = require("../api/api");
+const { getSymptoms, getDiagnosis, getAccessToken } = require("../api/api");
 const Diagnosis = require("../models/DiagnosisModel");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const api_auth = process.env.API_AUTH;
+
+const getAccessTokenController = async (req, res) => {
+  try {
+    const token = await getAccessToken();
+    const data = await token.post(`${api_auth}`);
+    // console.log("data", data.data);
+    return data.data;
+    // token
+    //   .post(`${api_auth}`)
+    //   .then((response) => {
+    //     // res.json({ data: response.data });
+    //     return response.data;
+    //   })
+    //   .catch((error) => {
+    //     return error.message;
+    //   });
+  } catch (error) {
+    console.log("error", error.message);
+  }
+};
 
 const getSymptomsController = async (req, res) => {
   try {
-    const symptoms = await getSymptoms();
+    const token = await getAccessTokenController();
+    const symptoms = await getSymptoms(token.Token);
     res.json(symptoms.data);
   } catch (error) {
     console.log("error", error.message);
   }
 };
 
+// getDiagnosis
+
 const getDiagnosisController = async (req, res) => {
   try {
+    const token = await getAccessTokenController();
     const { selectedSymptoms, selectedDob, selectedGender } = JSON.parse(
       req.query.data
     );
     const data = { selectedSymptoms, selectedDob, selectedGender };
-    const diagnosis = await getDiagnosis(data);
+    const diagnosis = await getDiagnosis(data, token.Token);
     res.json(diagnosis);
   } catch (error) {
     console.log("error", error.message);
@@ -70,4 +98,5 @@ module.exports = {
   getDiagnosisController,
   saveDiagnosisController,
   getAllDiagnosis,
+  getAccessTokenController,
 };

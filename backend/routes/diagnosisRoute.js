@@ -4,9 +4,12 @@ const {
   getDiagnosisController,
   saveDiagnosisController,
   getAllDiagnosis,
+  getAccessTokenController,
 } = require("../controllers/diagnosisController");
 
 const router = express.Router();
+
+router.post("/auth", getAccessTokenController);
 
 router.get("/all", getAllDiagnosis);
 
