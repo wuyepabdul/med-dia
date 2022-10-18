@@ -19,14 +19,16 @@ const Diagnose = () => {
 
   const loadSymptoms = async () => {
     try {
-      const data = await fetchSymptoms();
       if (localStorageSymptoms) {
         setSymptoms(localStorageSymptoms);
       } else {
+        const data = await fetchSymptoms();
         setSymptoms(data);
         localStorage.setItem("symptoms", JSON.stringify(data));
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const state = { options: symptoms && symptoms };
@@ -71,86 +73,85 @@ const Diagnose = () => {
     }
   };
   return (
-    <div className="container py-5">
+    <div className="container ">
+    
       <div className="row">
         <div className="col-md-6">
           {symptoms ? (
-            <>
-              <form className="row border border-1 p-3" onSubmit={handleSubmit}>
-                <div className="col-md-12 mb-3">
-                  <label htmlFor="symptomsInput" className="form-label">
-                    Symptoms
-                  </label>
-                  <Multiselect
-                    options={symptoms}
-                    selectedValues={state.selectedValue}
-                    onSelect={onSelect}
-                    onRemove={onRemove}
-                    displayValue="Name"
-                  />
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label
-                    htmlFor="exampleFormControlTextarea1"
-                    className="form-label"
-                  >
-                    Date of Birth
-                  </label>
-                  <select
-                    className="form-select"
-                    aria-label="Default select example"
-                    onChange={(e) => {
-                      setSelectedDob(e.target.value);
-                    }}
-                  >
-                    <option defaultValue="Open this select menu">
-                      Open this select menu
+            <form className="row border border-1 p-3" onSubmit={handleSubmit}>
+              <div className="col-md-12 mb-3">
+                <label htmlFor="symptomsInput" className="form-label">
+                  Symptoms
+                </label>
+                <Multiselect
+                  options={symptoms}
+                  selectedValues={state.selectedValue}
+                  onSelect={onSelect}
+                  onRemove={onRemove}
+                  displayValue="Name"
+                />
+              </div>
+              <div className="col-md-12 mb-3">
+                <label
+                  htmlFor="exampleFormControlTextarea1"
+                  className="form-label"
+                >
+                  Date of Birth
+                </label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  onChange={(e) => {
+                    setSelectedDob(e.target.value);
+                  }}
+                >
+                  <option defaultValue="Open this select menu">
+                    Open this select menu
+                  </option>
+                  {dateOfBirth.map((dob) => (
+                    <option key={dob.id} value={dob.dob}>
+                      {" "}
+                      {dob.dob}{" "}
                     </option>
-                    {dateOfBirth.map((dob) => (
-                      <option key={dob.id} value={dob.dob}>
-                        {" "}
-                        {dob.dob}{" "}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label
-                    htmlFor="exampleFormControlTextarea1"
-                    className="form-label"
-                  >
-                    {" "}
-                    Gender
-                  </label>
-                  <select
-                    className="form-select"
-                    aria-label="Default select example"
-                    onChange={(e) => {
-                      setSelectedGender(e.target.value);
-                    }}
-                  >
-                    <option defaultValue="Open this select menu">
-                      Open this select menu
+                  ))}
+                </select>
+              </div>
+              <div className="col-md-12 mb-3">
+                <label
+                  htmlFor="exampleFormControlTextarea1"
+                  className="form-label"
+                >
+                  {" "}
+                  Gender
+                </label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  onChange={(e) => {
+                    setSelectedGender(e.target.value);
+                  }}
+                >
+                  <option defaultValue="Open this select menu">
+                    Open this select menu
+                  </option>
+                  {genderSelect.map((gen) => (
+                    <option key={gen.id} value={gen.gender}>
+                      {" "}
+                      {gen.gender}{" "}
                     </option>
-                    {genderSelect.map((gen) => (
-                      <option key={gen.id} value={gen.gender}>
-                        {" "}
-                        {gen.gender}{" "}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={loading}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           ) : (
             loadingSpinner()
           )}

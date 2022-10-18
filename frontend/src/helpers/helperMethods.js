@@ -1,8 +1,5 @@
 export const dateOfBirth = [
-  {
-    id: 1,
-    dob: "2022",
-  },
+  
 
   {
     id: 2,

@@ -4,7 +4,6 @@ dotenv.config();
 const axios = require("axios");
 
 const baseUrl = process.env.API_URL;
-// const token = process.env.API_TOKEN;
 const api_auth = process.env.API_AUTH;
 
 const getSymptoms = async (token) => {
@@ -43,15 +42,7 @@ const getAccessToken = async () => {
     });
     return response;
 
-    // response
-    //   .post(`${api_auth}`)
-    //   .then((data) => {
-    //     console.log("data===>", data.data);
-    //     return data.data;
-    //   })
-    //   .catch((error) => {
-    //     return error.message;
-    //   });
+ 
   } catch (error) {
     console.log("api error", error.message);
   }

@@ -7,6 +7,30 @@ const Diagnosis = (props) => {
     : null;
 
   const [propsData, setPropsData] = useState([]);
+  const [validity, setValidity] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  let componentName = "";
+  let componentAccuracy = 0;
+  let componentProfName = "";
+  let componentIcdName = "";
+  let componentIcd = "";
+  let componentRanking = 0;
+
+  const onSearch = (e) => {
+    const filteredData = propsData.filter((item) => {
+      return item.Issue.Name.toUpperCase().startsWith(
+        `${e.target.value.toUpperCase()}`
+      );
+    });
+    setPropsData(filteredData);
+
+    if (e.target.value.length === 0) {
+      setPropsData(localStorageDiagnosis ? localStorageDiagnosis : props.data);
+    }
+  };
 
   useEffect(() => {
     if (localStorageDiagnosis) {
@@ -16,15 +40,6 @@ const Diagnosis = (props) => {
     }
   }, []);
 
-  let componentName = "";
-  let componentAccuracy = 0;
-  let componentProfName = "";
-  let componentIcdName = "";
-  let componentIcd = "";
-  let componentRanking = 0;
-
-  const [validity, setValidity] = useState(false);
-
   const organizeDiagnosisData = async (data, validityState) => {
     try {
       componentName = data.Name;
@@ -33,6 +48,8 @@ const Diagnosis = (props) => {
       componentIcdName = data.IcdName;
       componentProfName = data.ProfName;
       componentRanking = data.Ranking;
+
+      setLoading(true);
 
       const diagnosisData = {
         Name: componentName,
@@ -53,9 +70,23 @@ const Diagnosis = (props) => {
         componentRanking !== 0
       ) {
         await saveDiagnosisData(diagnosisData);
+        setLoading(false);
+        setSuccess(true);
+        setError(false);
+        setTimeout(() => {
+          setError(false);
+          setSuccess(false);
+        }, 1000);
       }
     } catch (error) {
       console.log("error", error.message);
+      setLoading(false);
+      setSuccess(false);
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+        setSuccess(false);
+      }, 1000);
     }
   };
 
@@ -71,6 +102,29 @@ const Diagnosis = (props) => {
 
   return (
     <div>
+      {success === true && (
+        <h2 className="text-success"> Validation Successful</h2>
+      )}
+
+      {error === true && (
+        <h2 className="text-warning"> Validation unsuccessful</h2>
+      )}
+
+      {props.length === 0 && (
+        <h2 className="text-warning text-center">Submit your symptoms</h2>
+      )}
+      <form className="row border border-1 p-3 mb-5">
+        <div className="input-group mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search Diagnosis by name"
+            aria-describedby="button-addon2"
+            onChange={onSearch}
+          />
+        </div>
+      </form>
+
       {propsData.length > 0 &&
         propsData.map((item) => (
           <form key={item.Issue.ID}>
@@ -93,6 +147,7 @@ const Diagnosis = (props) => {
                       setValidity(true);
                       onValidateClick(item.Issue, validity);
                     }}
+                    disabled={loading ? true : false}
                   >
                     Valid
                   </button>
@@ -105,6 +160,7 @@ const Diagnosis = (props) => {
                       setValidity(false);
                       onInValidateClick(item.Issue, validity);
                     }}
+                    disabled={loading ? true : false}
                   >
                     Invalid
                   </button>
