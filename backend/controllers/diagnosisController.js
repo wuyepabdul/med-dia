@@ -9,17 +9,8 @@ const getAccessTokenController = async (req, res) => {
   try {
     const token = await getAccessToken();
     const data = await token.post(`${api_auth}`);
-    // console.log("data", data.data);
     return data.data;
-    // token
-    //   .post(`${api_auth}`)
-    //   .then((response) => {
-    //     // res.json({ data: response.data });
-    //     return response.data;
-    //   })
-    //   .catch((error) => {
-    //     return error.message;
-    //   });
+    
   } catch (error) {
     console.log("error", error.message);
   }
